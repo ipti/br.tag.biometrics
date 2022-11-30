@@ -8,6 +8,13 @@ Time<br>
 Serial<br>
 Tkinter<br>
 
+Obs.:
+- run "main.py" to run the application on localhost port 5000
+- correctly configure the serial port for the connected reader in "fingerprint.py" line 9
+- "/templates/index.html" is just a simple front-end interface example with socket implementation.<br>
+- run "pip install -r requirements.txt" to install the required python libraries for the application.<br>
+- the JSON format is with event, id, info attributes. With the exception of FINGERDETECTED which contains the finger_id and the confidence
+
 ## Message codes and information in JSON format
 |     Event     |   ID   |          Info         |
 | ------------- | ---|------------------------ |
@@ -62,10 +69,3 @@ Tkinter<br>
 |FLASHSTORAGEERROR | 527 | Erro de armazenamento flash |
 |SAVINGERROR | 528 | Ocorreu um erro ao salvar |
 |FINGERSNOTMATCH | 529 | As impressões não correspondem |
-
-Obs.:
-- run "main.py" to run the application on localhost port 5000
-- correctly configure the serial port for the connected reader in "fingerprint.py" line 9
-- "/templates/index.html" is just a simple front-end interface example with socket implementation.<br>
-- run "pip install -r requirements.txt" to install the required python libraries for the application.<br>
-- the JSON format is with event, id, info attributes. With the exception of FINGERDETECTED which contains the finger_id and the confidence
