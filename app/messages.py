@@ -1,3 +1,4 @@
+
 #MENSAGENS DO BACK
 STOREOK =   { 
                 "event": "STOREOK",

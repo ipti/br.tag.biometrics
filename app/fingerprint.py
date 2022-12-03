@@ -1,19 +1,24 @@
 import time
 import serial
 from tkinter import messagebox
-import messages
+from app import messages
 
 import adafruit_fingerprint
 
-try :
-    uart = serial.Serial("COM3", baudrate=57600, timeout=1)
-    # uart = serial.Serial("dev/ttyUSB0", baudrate=57600, timeout=1) For Linux/Raspberry PI  
-except:
-    messagebox.showinfo('Ocorreu um erro', \
-      'Conecte o leitor biométrico')
-    exit()
+global finger;
 
-finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)
+def connect_fingerprint(port):
+    try :
+        uart = serial.Serial(port, baudrate=57600, timeout=1)
+        # uart = serial.Serial("dev/ttyUSB0", baudrate=57600, timeout=1) For Linux/Raspberry PI  
+    except:
+        messagebox.showinfo('Ocorreu um erro', \
+        'Conecte o leitor biométrico')
+        exit()
+
+    finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)
+
+    
 
 def get_fingerprint(socketio):
     socketio.emit('message', messages.WAITINGIMAGE)

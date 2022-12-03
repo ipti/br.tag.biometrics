@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Leitura Biométrica</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.js" integrity="sha512-ttqbKrGZiTtSLguBZ2xNvZrhUv02IO/TRq5U6TG5TK90wbaXWup5kIJ1A1tLzjOk5Mea/G4seVNrU+lwTLfAzA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<style>
 		@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 		* {
@@ -38,8 +39,7 @@
 	<h3>Saída</h3>
 	<div class="terminal" id="term">
 	</div>
-	<button type="submit" id="clearTerminal" style="text-align: center;">Limpar Terminal</button>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+	<button type="submit" id="clearTerminal" style="text-align: center;">Limpar Terminal</button>	
 	<script>
 		function clearTerminal() {
 			var div = document.getElementById("term");

@@ -1,21 +1,10 @@
-from flask import Flask, render_template
-from flask_socketio import SocketIO, emit
-import messages
+from app import app, socketio, messages
 
-import fingerprint
-from flask_cors import CORS
-    
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
 
-@app.route('/')
-def home():
-    return render_template("index.html")
 
 @socketio.on('IdStore')
 def store_finger(IdStore):
+    socketio.emit('message', messages.STOREOK)
     if fingerprint.enroll_finger(int(IdStore), socketio):
         socketio.emit('message', messages.STOREOK)
     else:
@@ -39,6 +28,9 @@ def handle_message(message):
             socketio.emit('message', messages.FINGERNODETECTED)
     elif message == 'StoreSendMessage':
         store_finger()
+    elif message == 'FakeSearch':
+        print("LOG: fake search")                
+        socketio.emit('message', SearchedMessage(30, 183).to_json())
     elif message == 'DeleteSendMessage':
         delete_finger()
     elif message == 'ClearSendMessage':
@@ -46,6 +38,3 @@ def handle_message(message):
             socketio.emit('message', messages.EMPTYLIBRARY)
         else:
             socketio.emit('message', messages.EMPTYLIBRARYFAIL)
-
-if __name__ == '__main__':
-    socketio.run(app)
