@@ -1,4 +1,5 @@
-from app import app, socketio, messages
+from app import app, fingerprint, socketio, messages
+from app.models import SearchedMessage
 
 
 
