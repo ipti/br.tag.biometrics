@@ -9,7 +9,7 @@ Serial<br>
 Tkinter<br>
 
 Obs.:
-- run "main.py" to run the application on localhost port 5000
+- run "run.py" to run the application on localhost port 5000
 - correctly configure the serial port for the connected reader in "fingerprint.py" line 9
 - "/templates/index.html" is just a simple front-end interface example with socket implementation.<br>
 - run "pip install -r requirements.txt" to install the required python libraries for the application.<br>
