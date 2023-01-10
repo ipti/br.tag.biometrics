@@ -13,14 +13,15 @@ class FingerprintController:
         self.finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)            
         
 
-    def get_fingerprint(self, socketio):
-        socketio.emit('message', messages.WAITINGIMAGE)
+    async def get_fingerprint(self, socketio):
+        await socketio.emit('message', messages.WAITINGIMAGE)
         while self.finger.get_image() != adafruit_fingerprint.OK:
+            await socketio.sleep(1)
             pass
-        socketio.emit('message', messages.MODELING)
+        await socketio.emit('message', messages.MODELING)
         if self.finger.image_2_tz(1) != adafruit_fingerprint.OK:
             return False
-        socketio.emit('message', messages.SEARCHING)
+        await socketio.emit('message', messages.SEARCHING)
         if self.finger.finger_search() != adafruit_fingerprint.OK:
             return False
         return True
@@ -67,67 +68,67 @@ class FingerprintController:
                 print("Other error")
             return False
 
-    def enroll_finger(self, location, socketio):
+    async def enroll_finger(self, location, socketio):
         for fingerimg in range(1, 3):
             if fingerimg == 1:
-                socketio.emit('message', messages.PUTFINGER)
+                await socketio.emit('message', messages.PUTFINGER)
             else:
-                socketio.emit('message', messages.PUTFINGERAGAIN)
+                await socketio.emit('message', messages.PUTFINGERAGAIN)
 
             while True:
                 i = self.finger.get_image()
                 if i == adafruit_fingerprint.OK:
-                    socketio.emit('message', messages.PICTURETAKEN)
+                    await socketio.emit('message', messages.PICTURETAKEN)
                     break
                 if i == adafruit_fingerprint.NOFINGER:
-                    socketio.emit('message', messages.WAITINGFINGER)
+                    await socketio.emit('message', messages.WAITINGFINGER)
                 elif i == adafruit_fingerprint.IMAGEFAIL:
-                    socketio.emit('message', messages.IMAGEFAIL)
+                    await socketio.emit('message', messages.IMAGEFAIL)
                     return False
                 else:
-                    socketio.emit('message', messages.OTHERERROR)
+                    await socketio.emit('message', messages.OTHERERROR)
                     return False
 
-            socketio.emit('message', messages.MODELING)
+            await socketio.emit('message', messages.MODELING)
             i = self.finger.image_2_tz(fingerimg)
             if i == adafruit_fingerprint.OK:
-                socketio.emit('message', messages.MODELED)
+                await socketio.emit('message', messages.MODELED)
             else:
                 if i == adafruit_fingerprint.IMAGEMESS:
-                    socketio.emit('message', messages.CONFUSINGIMAGE)
+                    await socketio.emit('message', messages.CONFUSINGIMAGE)
                 elif i == adafruit_fingerprint.FEATUREFAIL:
-                    socketio.emit('message', messages.NOTIDENTIFTRESOURCES)
+                    await socketio.emit('message', messages.NOTIDENTIFTRESOURCES)
                 elif i == adafruit_fingerprint.INVALIDIMAGE:
-                    socketio.emit('message', messages.INVALIDIMAGE)
+                    await socketio.emit('message', messages.INVALIDIMAGE)
                 else:
-                    socketio.emit('message', messages.OTHERERROR)
+                    await socketio.emit('message', messages.OTHERERROR)
                 return False
             if fingerimg == 1:
-                socketio.emit('message', messages.REMOVEFINGER)
+                await socketio.emit('message', messages.REMOVEFINGER)
                 time.sleep(1)
                 while i != adafruit_fingerprint.NOFINGER:
                     i = self.finger.get_image()
 
-        socketio.emit('message', messages.MODELING)
+        await socketio.emit('message', messages.MODELING)
         i = self.finger.create_model()
         if i == adafruit_fingerprint.OK:
-            socketio.emit('message', messages.CARRER)
+            await socketio.emit('message', messages.CARRER)
         else:
             if i == adafruit_fingerprint.ENROLLMISMATCH:
-                socketio.emit('message', messages.FINGERSNOTMATCH)
+                await socketio.emit('message', messages.FINGERSNOTMATCH)
             else:
-                socketio.emit('message', messages.OTHERERROR)
+                await socketio.emit('message', messages.OTHERERROR)
             return False
         i = self.finger.store_model(location)
         if i == adafruit_fingerprint.OK:
-            socketio.emit('message', messages.STORED)
+            await socketio.emit('message', messages.STORED)
         else:
             if i == adafruit_fingerprint.BADLOCATION:
-                socketio.emit('message', messages.BADSTORAGELOCATION)
+                await socketio.emit('message', messages.BADSTORAGELOCATION)
             elif i == adafruit_fingerprint.FLASHERR:
-                socketio.emit('message', messages.FLASHSTORAGEERROR)
+                await socketio.emit('message', messages.FLASHSTORAGEERROR)
             else:
-                socketio.emit('message', messages.OTHERERROR)
+                await socketio.emit('message', messages.OTHERERROR)
             return False
 
         return True
