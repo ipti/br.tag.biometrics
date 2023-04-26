@@ -66,7 +66,6 @@ def handle_message(message):
         fingerprint.lockScan()
     else:
         id = _thread.start_new_thread(decidir,(message,))
-    
     print("Saindo do handle")
     _thread.exit()
     

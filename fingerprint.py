@@ -30,9 +30,12 @@ def get_fingerprint(socketio):
         pass
     socketio.emit('message', messages.MODELING) 
     if finger.image_2_tz(1) != adafruit_fingerprint.OK:
+        print("Entrou na condicao 1")
         return False
     socketio.emit('message', messages.SEARCHING)
+    print(finger.finger_search())
     if finger.finger_search() != adafruit_fingerprint.OK:
+        print("Entrou na condicao 2")
         return False
     return True
 
