@@ -42,14 +42,14 @@
 	<button type="submit" id="clearTerminal" style="text-align: center;">Limpar Terminal</button>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 	<script>
-		function clearTerminal() {
-			var div = document.getElementById("term");
-            while(div.firstChild) {
-                div.removeChild(div.firstChild);
-            }
+		function clearTerminal() {	
+			//var div = document.getElementById("term");
+            //while(div.firstChild) {
+            //    div.removeChild(div.firstChild);
+            //}
 		}
 		window.onload = function() {
-			const socket = io('http://127.0.0.1:5000');
+			const socket = io('http://localhost:8000');
 			
 			socket.send('Usuario conectado ao socket!');	
 			socket.on('message', (e) => {

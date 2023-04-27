@@ -9,13 +9,21 @@ from flask_cors import CORS
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+
 
 print("Conectado")
 @app.route('/')
 def home():
     print("Chamou /")
     return render_template("index.html")
+
+@app.route('/init')
+def teste():
+    global socketio
+    socketio.emit('message', messages.WAITINGFINGER)
+    id = _thread.start_new_thread(metodoLer,("message",))
+
 
 @socketio.on('IdStore')
 def store_finger(IdStore):
@@ -34,19 +42,32 @@ def delete_finger(IdDelete):
         socketio.emit('message', messages.DELETEFAIL)
 
 def lerDigital():
+    global socketio
     print("Lendo digital")
     if fingerprint.get_fingerprint(socketio):
         messages.FINGERDETECTED['id_finger'] = fingerprint.finger.finger_id
         messages.FINGERDETECTED['confidence'] = fingerprint.finger.confidence
         socketio.emit('message', messages.FINGERDETECTED)
+        print("Emitindo Finger detected")
     else:
-        socketio.emit('message', messages.FINGERNODETECTED)
+        socketio.send(messages.FINGERNODETECTED)
+        print("Emitindo Finger not detected")
     
-def decidir(message):
+def metodoLer(message):
+    lerDigital()
+    print("Passou")
+    fingerprint.unlockScan()
+
+
+@socketio.on('message')
+def handle_message(message):
+    print(f"message: {message}")
     if message == 'SearchSendMessage':
-        lerDigital()
-        print("Passou")
-        fingerprint.unlockScan()
+        # metodoLer(socketio)
+        id = _thread.start_new_thread(metodoLer,(message,))
+        pass
+    elif(message == 'CancelMessage' or _thread._count() != 0):
+        fingerprint.lockScan()
     elif message == 'StoreSendMessage':
         store_finger()
     elif message == 'DeleteSendMessage':
@@ -57,19 +78,13 @@ def decidir(message):
         else:
             socketio.emit('message', messages.EMPTYLIBRARYFAIL)
 
-
-@socketio.on('message')
-def handle_message(message):
-    print(f"message: {message}")
-    
-    if(message == 'CancelMessage' or _thread._count() != 0):
-        fingerprint.lockScan()
-    else:
-        id = _thread.start_new_thread(decidir,(message,))
     print("Saindo do handle")
     _thread.exit()
     
     
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app,host='0.0.0.0')
+    #gunicorn -w 1 --threads 100 main:app
+    
+    # app.run(debug=True, port=5000, host='0.0.0.0')
