@@ -16,7 +16,6 @@ finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)
 
 block = False
 
-
 def lockScan():
     global block 
     block = True
@@ -26,26 +25,11 @@ def unlockScan():
     block = False
 
 def get_fingerprint(socketio):
-    while finger.get_image() != adafruit_fingerprint.OK and block == False:
-        pass
-    socketio.emit('message', messages.MODELING) 
-    if finger.image_2_tz(1) != adafruit_fingerprint.OK:
-        print("Entrou na condicao 1")
-        return False
-    socketio.emit('message', messages.SEARCHING)
-    print(finger.finger_search())
-    if finger.finger_search() != adafruit_fingerprint.OK:
-        print("Entrou na condicao 2")
-        return False
-    return True
-
-
-def get_fingerprint_detail():
-    print("Getting image...")
     i = finger.get_image()
-    if i == adafruit_fingerprint.OK:
-        print("Image taken")
-    else:
+    while i != adafruit_fingerprint.OK and block == False:
+        i = finger.get_image()
+        pass
+    if i != adafruit_fingerprint.OK:
         if i == adafruit_fingerprint.NOFINGER:
             print("No finger detected")
         elif i == adafruit_fingerprint.IMAGEFAIL:
@@ -53,12 +37,11 @@ def get_fingerprint_detail():
         else:
             print("Other error")
         return False
+    print("Image taken")
+    socketio.emit('message', messages.MODELING) 
 
-    print("Templating...")
     i = finger.image_2_tz(1)
-    if i == adafruit_fingerprint.OK:
-        print("Templated")
-    else:
+    if i != adafruit_fingerprint.OK:
         if i == adafruit_fingerprint.IMAGEMESS:
             print("Image too messy")
         elif i == adafruit_fingerprint.FEATUREFAIL:
@@ -68,6 +51,9 @@ def get_fingerprint_detail():
         else:
             print("Other error")
         return False
+    
+    print("Templated")
+    socketio.emit('message', messages.SEARCHING)
 
     print("Searching...", end="")
     i = finger.finger_fast_search()

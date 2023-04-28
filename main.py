@@ -42,7 +42,6 @@ def delete_finger(IdDelete):
         socketio.emit('message', messages.DELETEFAIL)
 
 def lerDigital():
-    global socketio
     print("Lendo digital")
     if fingerprint.get_fingerprint(socketio):
         messages.FINGERDETECTED['id_finger'] = fingerprint.finger.finger_id
@@ -64,7 +63,7 @@ def handle_message(message):
     print(f"message: {message}")
     if message == 'SearchSendMessage':
         # metodoLer(socketio)
-        id = _thread.start_new_thread(metodoLer,(message,))
+        id = _thread.start_new_thread(metodoLer,("",))
         pass
     elif(message == 'CancelMessage' or _thread._count() != 0):
         fingerprint.lockScan()
@@ -85,6 +84,4 @@ def handle_message(message):
 
 if __name__ == '__main__':
     socketio.run(app,host='0.0.0.0')
-    #gunicorn -w 1 --threads 100 main:app
-    
-    # app.run(debug=True, port=5000, host='0.0.0.0')
+    #gunicorn -w 1 --threads 100 --bind 0.0.0.0:5000 main:app
