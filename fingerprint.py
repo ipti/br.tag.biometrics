@@ -17,10 +17,12 @@ finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)
 block = False
 
 def lockScan():
+    print("lock Scan")
     global block 
     block = True
 
 def unlockScan():
+    print("Unlock Scan")
     global block 
     block = False
 
@@ -68,18 +70,23 @@ def get_fingerprint(socketio):
         return False
 
 def enroll_finger(location, socketio):
+    print(f"Location: ${location}")
+    unlockScan()
     for fingerimg in range(1, 3):
         if fingerimg == 1:
+            print("Colocar o dedo")
             socketio.emit('message', messages.PUTFINGER)
         else:
+            print("Colocar o dedo novamente")
             socketio.emit('message', messages.PUTFINGERAGAIN)
 
-        while True:
+        i = finger.get_image()
+        while i != adafruit_fingerprint.OK and block == False:
+            print("While")
             i = finger.get_image()
             if i == adafruit_fingerprint.OK:
                 socketio.emit('message', messages.PICTURETAKEN)
-                break
-            if i == adafruit_fingerprint.NOFINGER:
+            elif i == adafruit_fingerprint.NOFINGER:
                 socketio.emit('message', messages.WAITINGFINGER)
             elif i == adafruit_fingerprint.IMAGEFAIL:
                 socketio.emit('message', messages.IMAGEFAIL)
@@ -87,12 +94,21 @@ def enroll_finger(location, socketio):
             else:
                 socketio.emit('message', messages.OTHERERROR)
                 return False
+            pass
+        
+
+        print("Passou até aqui")
+
+        #==============================================================
+        
 
         socketio.emit('message', messages.MODELING)
         i = finger.image_2_tz(fingerimg)
         if i == adafruit_fingerprint.OK:
+            print("IF")
             socketio.emit('message', messages.MODELED)
         else:
+            print(f"ELSE {i}")
             if i == adafruit_fingerprint.IMAGEMESS:
                 socketio.emit('message', messages.CONFUSINGIMAGE)
             elif i == adafruit_fingerprint.FEATUREFAIL:
@@ -103,13 +119,14 @@ def enroll_finger(location, socketio):
                 socketio.emit('message', messages.OTHERERROR)
             return False
         if fingerimg == 1:
+            print("IF SEPARADO")
             socketio.emit('message', messages.REMOVEFINGER)
             time.sleep(1)
-            while i != adafruit_fingerprint.NOFINGER:
-                i = finger.get_image()
 
+    print("FORA DE TUDO")
     socketio.emit('message', messages.MODELING)
     i = finger.create_model()
+
     if i == adafruit_fingerprint.OK:
         socketio.emit('message', messages.CARRER)
     else:

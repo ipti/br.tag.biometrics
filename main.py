@@ -65,8 +65,6 @@ def handle_message(message):
         # metodoLer(socketio)
         id = _thread.start_new_thread(metodoLer,("",))
         pass
-    elif(message == 'CancelMessage' or _thread._count() != 0):
-        fingerprint.lockScan()
     elif message == 'StoreSendMessage':
         store_finger()
     elif message == 'DeleteSendMessage':
@@ -76,6 +74,8 @@ def handle_message(message):
             socketio.emit('message', messages.EMPTYLIBRARY)
         else:
             socketio.emit('message', messages.EMPTYLIBRARYFAIL)
+    elif(message == 'CancelMessage' or _thread._count() != 0):
+        fingerprint.lockScan()
 
     print("Saindo do handle")
     _thread.exit()
