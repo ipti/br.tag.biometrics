@@ -80,23 +80,29 @@ def enroll_finger(location, socketio):
             print("Colocar o dedo novamente")
             socketio.emit('message', messages.PUTFINGERAGAIN)
 
+        entrou = False
         i = finger.get_image()
         while i != adafruit_fingerprint.OK and block == False:
-            print("While")
             i = finger.get_image()
-            if i == adafruit_fingerprint.OK:
+            if i == adafruit_fingerprint.OK and entrou == False:
+                print("PICTURETAKEN")
                 socketio.emit('message', messages.PICTURETAKEN)
-            elif i == adafruit_fingerprint.NOFINGER:
+            elif i == adafruit_fingerprint.NOFINGER and entrou == False:
+                print("WAITINGFINGER")
                 socketio.emit('message', messages.WAITINGFINGER)
-            elif i == adafruit_fingerprint.IMAGEFAIL:
+            elif i == adafruit_fingerprint.IMAGEFAIL and entrou == False:
+                print("IMAGEFAIL")
                 socketio.emit('message', messages.IMAGEFAIL)
                 return False
-            else:
+            elif entrou == False:
+                print("OTHERERROR")
                 socketio.emit('message', messages.OTHERERROR)
                 return False
+            
+            entrou = True
             pass
         
-
+ 
         print("Passou até aqui")
 
         #==============================================================

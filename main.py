@@ -29,6 +29,7 @@ def teste():
 def store_finger(IdStore):
     print("IDSTORE")
     if fingerprint.enroll_finger(int(IdStore), socketio):
+        print("EMITINDO STOREOK")
         socketio.emit('message', messages.STOREOK)
     else:
         socketio.emit('message', messages.STOREFAIL)
