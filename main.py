@@ -2,6 +2,7 @@ import _thread
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 import messages
+import time
 
 import fingerprint
 from flask_cors import CORS
@@ -17,12 +18,6 @@ print("Conectado")
 def home():
     print("Chamou /")
     return render_template("index.html")
-
-@app.route('/init')
-def teste():
-    global socketio
-    socketio.emit('message', messages.WAITINGFINGER)
-    id = _thread.start_new_thread(metodoLer,("message",))
 
 
 @socketio.on('IdStore')
@@ -44,19 +39,25 @@ def delete_finger(IdDelete):
 
 def lerDigital():
     print("Lendo digital")
+    socketio.emit('message', messages.WAITINGFINGER)
     if fingerprint.get_fingerprint(socketio):
         messages.FINGERDETECTED['id_finger'] = fingerprint.finger.finger_id
         messages.FINGERDETECTED['confidence'] = fingerprint.finger.confidence
         socketio.emit('message', messages.FINGERDETECTED)
         print("Emitindo Finger detected")
+        time.sleep(5)
     else:
         socketio.send(messages.FINGERNODETECTED)
         print("Emitindo Finger not detected")
+        time.sleep(2)
     
 def metodoLer(message):
-    lerDigital()
-    print("Passou")
-    fingerprint.unlockScan()
+    loop = True
+    while loop:
+        lerDigital()
+        print("Passou")
+        fingerprint.unlockScan()
+        
 
 
 @socketio.on('message')

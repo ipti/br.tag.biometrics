@@ -13,7 +13,6 @@ except:
     exit()
 
 finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)
-
 block = False
 
 def lockScan():
@@ -127,7 +126,10 @@ def enroll_finger(location, socketio):
         if fingerimg == 1:
             print("IF SEPARADO")
             socketio.emit('message', messages.REMOVEFINGER)
-            time.sleep(1)
+            while finger.get_image() != adafruit_fingerprint.NOFINGER:
+                socketio.emit('message', messages.REMOVEFINGER)
+                pass
+            # time.sleep(1)
 
     print("FORA DE TUDO")
     socketio.emit('message', messages.MODELING)
