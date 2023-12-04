@@ -40,16 +40,17 @@
 	<div class="terminal" id="term">
 	</div>
 	<button type="submit" id="clearTerminal" style="text-align: center;">Limpar Terminal</button>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+	<script src="/templates/socket.io.js"></script>
 	<script>
-		function clearTerminal() {	
+		function clearTerminal() {
 			//var div = document.getElementById("term");
             //while(div.firstChild) {
             //    div.removeChild(div.firstChild);
             //}
 		}
 		window.onload = function() {
-			const socket = io('http://localhost:5000');
+			console.log("Iniciando");
+			const socket = io("http://10.0.0.1:5000");
 			
 			socket.send('Usuario conectado ao socket!');	
 			socket.on('message', (e) => {
@@ -66,7 +67,7 @@
 				var div = document.getElementById("term");
 				var height = div.scrollHeight;
 				div.scrollTop = height;
-			})
+			});
 			document.getElementById("cancelButton").addEventListener("click", function () {
 				clearTerminal()
 				socket.send('CancelMessage');
@@ -101,7 +102,6 @@
 				socket.send('ClearSendMessage');
 			});
 		}
-		
 	</script>
 </body>
 </html>

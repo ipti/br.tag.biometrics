@@ -8,7 +8,6 @@ Adafruit-PureIO==1.1.9
 arandr==0.1.10
 astroid==2.5.1
 asttokens==2.0.4
-simple-websocket==0.10.1
 automationhat==0.2.0
 beautifulsoup4==4.9.3
 bidict==0.22.0

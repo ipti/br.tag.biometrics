@@ -5,6 +5,7 @@ import messages
 
 import adafruit_fingerprint
 
+# Tentar conectar com o leitor biométrico
 try :
     uart = serial.Serial("/dev/ttyUSB0", baudrate=57600, timeout=1)   
 except:
@@ -12,19 +13,31 @@ except:
       'Conecte o leitor biométrico')
     exit()
 
+# Criar o objeto do leitor biométrico
 finger = adafruit_fingerprint.Adafruit_Fingerprint(uart)
+
+max_fingers_capacity = 150
+
 block = False
 
+# Bloquear o leitor biométrico
 def lockScan():
     print("lock Scan")
     global block 
     block = True
 
+# Desbloquear o leitor biométrico
 def unlockScan():
     print("Unlock Scan")
     global block 
     block = False
 
+# Deleta todos os dedos cadastrados
+def deleteAllFinger():
+    for i in range(max_fingers_capacity):
+        finger.delete_model(i)
+
+# Verifica se o dedo está cadastrado
 def get_fingerprint(socketio):
     i = finger.get_image()
     while i != adafruit_fingerprint.OK and block == False:

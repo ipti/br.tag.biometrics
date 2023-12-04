@@ -41,6 +41,11 @@ EMPTYLIBRARYFAIL = {
                 "id": 503,
                 "info": "Falha ao esvaziar a biblioteca"
         }
+INCREMENTCOUNTER = {
+                "event": "INCREMENTCOUNTER",
+                "id": 204,
+                "info": "Contador incrementado"
+        }
 
 # MENSAGENS DA BIBLIOTECA
 PACKETRECIEVEERR = {
