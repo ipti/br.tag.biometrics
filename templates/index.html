@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Leitura Biométrica</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+		* {
+			font-family: 'Roboto', sans-serif;
+			text-align:center;
+		}
+		#header {
+			padding: 50px;
+		}
+		#header a {
+			display: block;
+			margin-bottom: 20px;
+		}
+		#header button {
+			cursor: pointer;
+			height: 50px;
+			width: 150px;
+		}
+		#term {
+			height: 250px;
+			overflow:auto; 
+		}
+	</style>
+</head>
+<body>
+	<div id="header">
+		<h1>Leitura Biométrica</h1>
+		<button type="submit" id="searchButton">Identificar</button>
+		<button type="submit" id="cancelButton">Cancelar</button>
+		<button type="submit" id="storeButton">Cadastrar</button>
+		<button type="submit" id="deleteButton">Deletar</button>
+		<button type="submit" id="clearButton">Limpar</button>
+	</div>
+	<h3>Saída</h3>
+	<div class="terminal" id="term">
+	</div>
+	<button type="submit" id="clearTerminal" style="text-align: center;">Limpar Terminal</button>
+	<script src="/templates/socket.io.js"></script>
+	<script>
+		function clearTerminal() {
+			//var div = document.getElementById("term");
+            //while(div.firstChild) {
+            //    div.removeChild(div.firstChild);
+            //}
+		}
+		window.onload = function() {
+			console.log("Iniciando");
+			const socket = io("http://10.0.0.1:5000");
+			
+			socket.send('Usuario conectado ao socket!');	
+			socket.on('message', (e) => {
+				console.log(e)
+				const msg = document.createElement("span");
+				const terminal = document.querySelector(".terminal");
+				if(e.id == 202){
+					msg.innerHTML = `<p>${e.info} ID#${e.id_finger} com grau de confianca: ${e.confidence}</p>`		
+				}else {
+					if(e.info != ".") msg.innerHTML = `<p>${e.info}</p>`
+					else msg.innerHTML = `<span>${e.info}</span>`	
+				}
+				terminal.append(msg)
+				var div = document.getElementById("term");
+				var height = div.scrollHeight;
+				div.scrollTop = height;
+			});
+			document.getElementById("cancelButton").addEventListener("click", function () {
+				clearTerminal()
+				socket.send('CancelMessage');
+			});
+			document.getElementById("clearTerminal").addEventListener("click", function () {
+				clearTerminal()
+			});
+			document.getElementById("searchButton").addEventListener("click", function () {
+				clearTerminal()
+				socket.send('SearchSendMessage');
+			});
+			document.getElementById("storeButton").addEventListener("click", function () {
+				clearTerminal()
+				do {
+					id = prompt("Digite o ID da biometria para cadastrar 0-149");
+					if(id == null) return;
+				} while (!id || id < 0 || id > 150);
+				socket.send('StoreSendMessage');
+				socket.emit('IdStore', id)
+			});
+			document.getElementById("deleteButton").addEventListener("click", function () {
+				clearTerminal()
+				do {
+					id = prompt("Digite o ID da biometria para excluir 0-149");
+					if(id == null) return;
+				} while (!id || id < 0 || id > 150);
+				socket.send('DeleteSendMessage');
+				socket.emit('IdDelete', id)
+			});
+			document.getElementById("clearButton").addEventListener("click", function () {
+				clearTerminal()
+				socket.send('ClearSendMessage');
+			});
+		}
+	</script>
+</body>
+</html>
